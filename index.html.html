@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw 自动化月报</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0f0f10;color:#e8e6e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:2rem 1.5rem;min-height:100vh;}
+  .kb-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:1.5rem;}
+  .kb-title{font-size:20px;font-weight:500;color:#fff;}
+  .kb-sub{font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px;}
+  .kb-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .status-badge{font-size:11px;padding:5px 12px;border-radius:8px;display:flex;align-items:center;gap:6px;background:#1a1a1b;color:rgba(255,255,255,0.4);}
+  .status-badge.ok{background:#04342C;color:#9FE1CB;}
+  .status-badge.err{background:#4A1B0C;color:#F5C4B3;}
+  .status-badge.loading{background:#26215C;color:#CECBF6;}
+  .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .dot.blink{animation:blink 1.2s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+  .btn{font-size:11px;padding:5px 14px;border-radius:8px;border:0.5px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;transition:background .15s;}
+  .btn:hover{background:rgba(255,255,255,0.08);}
+
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.5rem;}
+  @media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr);}}
+  .mc{border-radius:10px;padding:14px 16px;}
+  .mc-pu{background:#26215C;}.mc-te{background:#04342C;}.mc-co{background:#4A1B0C;}.mc-gr{background:#2C2C2A;}
+  .mc-label{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;}
+  .mc-val{font-size:22px;font-weight:500;color:#fff;line-height:1.1;}
+  .mc-note{font-size:10px;margin-top:4px;color:rgba(255,255,255,0.3);}
+  .mc-up{color:#5DCAA5;}
+
+  .sec{font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+
+  .kanban{display:grid;gap:12px;margin-bottom:1.5rem;}
+  .col-head{border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .col-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .card{background:#1a1a1b;border:0.5px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;margin-bottom:8px;}
+  .card-empty{background:#161617;border:0.5px dashed rgba(255,255,255,0.1);border-radius:12px;padding:12px 14px;margin-bottom:8px;opacity:0.5;}
+  .tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;margin-bottom:7px;}
+  .ct{font-size:12px;font-weight:500;color:#e8e6e0;margin-bottom:6px;line-height:1.4;}
+  .cb{font-size:11px;color:rgba(255,255,255,0.45);line-height:1.6;}
+  .sr{display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+  .sr:last-child{border-bottom:none;}
+  .sk{font-size:11px;color:rgba(255,255,255,0.4);}
+  .sv{font-size:11px;font-weight:500;color:#e8e6e0;}
+  .empty-hint{font-size:11px;color:rgba(255,255,255,0.25);text-align:center;padding:20px 0;line-height:1.8;}
+
+  .two{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1.5rem;}
+  @media(max-width:600px){.two{grid-template-columns:1fr;}}
+  .cw{position:relative;width:100%;height:190px;}
+  .divider{border:none;border-top:0.5px solid rgba(255,255,255,0.07);margin:1.25rem 0;}
+  .ri{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;}
+  .rd{width:5px;height:5px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .badge{font-size:10px;padding:3px 10px;border-radius:8px;background:#1a1a1b;color:rgba(255,255,255,0.4);border:0.5px solid rgba(255,255,255,0.1);}
+
+  .csv-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem;padding:12px 16px;background:#1a1a1b;border-radius:10px;border:0.5px solid rgba(255,255,255,0.08);}
+  .csv-label{font-size:11px;color:rgba(255,255,255,0.4);white-space:nowrap;}
+  .csv-input{flex:1;min-width:200px;font-size:11px;padding:6px 10px;border-radius:8px;border:0.5px solid rgba(255,255,255,0.15);background:#0f0f10;color:#e8e6e0;font-family:monospace;}
+  .csv-input:focus{outline:none;border-color:rgba(127,119,221,0.6);}
+</style>
+</head>
+<body>
+
+<div class="kb-header">
+  <div>
+    <div class="kb-title">OpenClaw 自动化月报</div>
+    <div class="kb-sub">商务中心 · 客服组 · 负责人：雨棠</div>
+  </div>
+  <div class="kb-right">
+    <div class="status-badge loading" id="statusBadge">
+      <span class="dot blink"></span>
+      <span id="statusText">读取中...</span>
+    </div>
+    <button class="btn" onclick="loadData()">重新整理</button>
+  </div>
+</div>
+
+<div class="csv-row">
+  <span class="csv-label">数据源 CSV：</span>
+  <input class="csv-input" id="csvUrl" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vR4MZC5X5HMRykJcEJ79oPYOsld-qLeiDfkPp2vDf661UR6r5Tp15xuJVYtRzQrMC94AUIvx3cSO6XK/pub?output=csv" />
+  <button class="btn" onclick="loadData()">套用</button>
+</div>
+
+<div class="metrics" id="metricsArea">
+  <div class="mc mc-pu"><div class="mc-label">月度总触发</div><div class="mc-val">—</div></div>
+  <div class="mc mc-te"><div class="mc-label">综合成功率</div><div class="mc-val">—</div></div>
+  <div class="mc mc-co"><div class="mc-label">总字符消耗</div><div class="mc-val">—</div></div>
+  <div class="mc mc-gr"><div class="mc-label">活跃智能体</div><div class="mc-val">—</div></div>
+</div>
+
+<div class="sec">周度看板</div>
+<div class="kanban" id="kanbanArea">
+  <div style="text-align:center;padding:3rem;color:rgba(255,255,255,0.25);font-size:13px;">载入中...</div>
+</div>
+
+<div class="divider"></div>
+<div class="sec">趋势图表</div>
+<div class="two">
+  <div class="card">
+    <div style="font-size:12px;font-weight:500;color:#e8e6e0;margin-bottom:12px;">任务触发次数</div>
+    <div class="cw"><canvas id="c1" role="img" aria-label="各周触发次数趋势">各周触发次数</canvas></div>
+  </div>
+  <div class="card">
+    <div style="font-size:12px;font-weight:500;color:#e8e6e0;margin-bottom:12px;">任务执行成功率</div>
+    <div class="cw"><canvas id="c2" role="img" aria-label="各周成功率趋势">各周成功率</canvas></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="two" id="summaryArea"></div>
+
+<div class="divider"></div>
+<div style="font-size:11px;color:rgba(255,255,255,0.3);">高频指令
+  <div class="badges">
+    <span class="badge">/T1</span><span class="badge">/T1E</span><span class="badge">/T1W</span>
+    <span class="badge">/daily</span><span class="badge">/dailydd</span>
+    <span class="badge">/WS</span><span class="badge">/WR</span>
+    <span class="badge">/QWS</span><span class="badge">/CWS</span><span class="badge">/XWS</span>
+  </div>
+</div>
+
+<script>
+const COLORS=[
+  {head:'#3C3489',txt:'#CECBF6',dot:'#AFA9EC',ts:'background:#3C3489;color:#CECBF6'},
+  {head:'#085041',txt:'#9FE1CB',dot:'#5DCAA5',ts:'background:#085041;color:#9FE1CB'},
+  {head:'#712B13',txt:'#F5C4B3',dot:'#F0997B',ts:'background:#712B13;color:#F5C4B3'},
+  {head:'#633806',txt:'#FAC775',dot:'#EF9F27',ts:'background:#633806;color:#FAC775'},
+  {head:'#2C2C2A',txt:'#D3D1C7',dot:'#888780',ts:'background:#2C2C2A;color:#B4B2A9'},
+];
+const TS_TE='background:#085041;color:#9FE1CB';
+const TS_AM='background:#633806;color:#FAC775';
+const TS_GR='background:#2C2C2A;color:#B4B2A9';
+const TS_RE='background:#791F1F;color:#F7C1C1';
+const TS_PU='background:#3C3489;color:#CECBF6';
+
+let chart1=null,chart2=null;
+
+function setStatus(type,text){
+  const b=document.getElementById('statusBadge');
+  b.className='status-badge '+type;
+  b.innerHTML=`<span class="dot${type==='loading'?' blink':''}"></span><span>${text}</span>`;
+}
+
+function parseRows(results){
+  const rows=results.data;
+  if(!rows||rows.length<2)return null;
+  const headers=rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.some(c=>c&&c.trim())).map(r=>{
+    const obj={};
+    headers.forEach((h,i)=>obj[h]=(r[i]||'').trim());
+    obj.触发次数=parseFloat(obj.触发次数)||0;
+    obj.成功率=parseFloat(obj.成功率)||0;
+    obj.字符消耗=parseFloat(obj.字符消耗)||0;
+    obj.智能体数=parseFloat(obj.智能体数)||0;
+    return obj;
+  });
+}
+
+function renderMetrics(data){
+  const total=data.reduce((s,r)=>s+r.触发次数,0);
+  const avgRate=(data.reduce((s,r)=>s+r.成功率,0)/data.length).toFixed(1);
+  const totalChar=data.reduce((s,r)=>s+r.字符消耗,0);
+  const maxAgents=Math.max(...data.map(r=>r.智能体数));
+  const best=data.reduce((a,b)=>a.成功率>b.成功率?a:b);
+  document.getElementById('metricsArea').innerHTML=`
+    <div class="mc mc-pu"><div class="mc-label">月度总触发</div><div class="mc-val">${total.toLocaleString()}</div><div class="mc-note">${data.length} 周数据</div></div>
+    <div class="mc mc-te"><div class="mc-label">综合成功率</div><div class="mc-val">${avgRate}%</div><div class="mc-note mc-up">最高 ${best.成功率}%（${best.周次}）</div></div>
+    <div class="mc mc-co"><div class="mc-label">总字符消耗</div><div class="mc-val">${totalChar.toLocaleString()}</div><div class="mc-note">${data.length} 周累计</div></div>
+    <div class="mc mc-gr"><div class="mc-label">活跃智能体</div><div class="mc-val">${maxAgents}</div><div class="mc-note">当前最大值</div></div>`;
+}
+
+function renderKanban(data){
+  const kb=document.getElementById('kanbanArea');
+  const cols=Math.min(data.length+1,4);
+  kb.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  let html=data.map((row,i)=>{
+    const c=COLORS[i%COLORS.length];
+    return `<div>
+      <div class="col-head" style="background:${c.head};color:${c.txt}">
+        <span class="col-dot" style="background:${c.dot}"></span>${row.周次} · ${row.日期区间||''}
+      </div>
+      <div class="card">
+        <span class="tag" style="${c.ts}">运行数据</span>
+        <div class="ct">${row.核心进展1||'—'}</div>
+        <div class="sr"><span class="sk">触发次数</span><span class="sv">${row.触发次数} 次</span></div>
+        <div class="sr"><span class="sk">成功率</span><span class="sv">${row.成功率}%</span></div>
+        <div class="sr"><span class="sk">字符消耗</span><span class="sv">${Number(row.字符消耗).toLocaleString()}</span></div>
+        <div class="sr"><span class="sk">平均响应</span><span class="sv">${row.平均响应||'—'}</span></div>
+      </div>
+      ${row.核心进展2?`<div class="card"><span class="tag" style="${TS_TE}">进展</span><div class="ct">${row.核心进展2}</div></div>`:''}
+      ${row.风险?`<div class="card"><span class="tag" style="${TS_AM}">风险</span><div class="cb">${row.风险}</div></div>`:''}
+      ${row.计划?`<div class="card"><span class="tag" style="${TS_GR}">计划</span><div class="cb">${row.计划}</div></div>`:''}
+    </div>`;
+  }).join('');
+  if(data.length<4){
+    html+=`<div>
+      <div class="col-head" style="background:#1e1e1f;color:#888780;border:0.5px dashed rgba(255,255,255,0.1)">
+        <span class="col-dot" style="background:#888780"></span>下一周 · 待更新
+      </div>
+      <div class="card-empty"><div class="empty-hint">填入 Sheets 后<br>点「重新整理」自动同步</div></div>
+    </div>`;
+  }
+  kb.innerHTML=html;
+}
+
+function renderCharts(data){
+  const tc='rgba(255,255,255,0.35)';
+  const gc='rgba(255,255,255,0.06)';
+  const labels=data.map(r=>r.周次);
+  const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc},border:{display:false}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc},border:{display:false}}}};
+  const barColors=data.map((_,i)=>['#3C3489','#085041','#712B13','#633806','#2C2C2A'][i%5]);
+  if(chart1)chart1.destroy();
+  if(chart2)chart2.destroy();
+  chart1=new Chart(document.getElementById('c1'),{type:'bar',data:{labels,datasets:[{data:data.map(r=>r.触发次数),backgroundColor:barColors,borderRadius:5}]},options:base});
+  chart2=new Chart(document.getElementById('c2'),{type:'line',data:{labels,datasets:[{data:data.map(r=>r.成功率),borderColor:'#7F77DD',backgroundColor:'rgba(127,119,221,0.12)',pointBackgroundColor:'#7F77DD',pointRadius:5,tension:0.3,fill:true}]},options:{...base,scales:{...base.scales,y:{...base.scales.y,min:60,max:100,ticks:{...base.scales.y.ticks,callback:v=>v+'%'}}}}});
+}
+
+function renderSummary(data){
+  const risks=[...new Set(data.map(r=>r.风险).filter(Boolean))];
+  const plans=[...new Set(data.map(r=>r.计划).filter(Boolean))];
+  document.getElementById('summaryArea').innerHTML=`
+    <div class="card"><span class="tag" style="${TS_RE}">风险汇总</span>${risks.map(r=>`<div class="ri"><span class="rd" style="background:#E24B4A"></span><span class="cb">${r}</span></div>`).join('')||'<div class="cb" style="padding:4px 0;">暂无风险记录</div>'}</div>
+    <div class="card"><span class="tag" style="${TS_PU}">演进方向</span>${plans.map(p=>`<div class="ri"><span class="rd" style="background:#7F77DD"></span><span class="cb">${p}</span></div>`).join('')||'<div class="cb" style="padding:4px 0;">暂无计划记录</div>'}</div>`;
+}
+
+async function loadData(){
+  setStatus('loading','读取中...');
+  const url=document.getElementById('csvUrl').value.trim();
+  if(!url){setStatus('err','请填入 CSV 网址');return;}
+  try{
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    const parsed=Papa.parse(text,{skipEmptyLines:true});
+    const data=parseRows(parsed);
+    if(!data||data.length===0)throw new Error('无数据，请确认栏位标题正确');
+    renderMetrics(data);
+    renderKanban(data);
+    renderCharts(data);
+    renderSummary(data);
+    const now=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+    setStatus('ok','已同步 '+now);
+  }catch(e){
+    setStatus('err','读取失败：'+e.message);
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>

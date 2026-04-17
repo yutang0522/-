@@ -83,8 +83,6 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .divider{border:none;border-top:0.5px solid rgba(255,255,255,0.06);margin:1.25rem 0;}
 .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
 .badge{font-size:10px;padding:2px 9px;border-radius:20px;background:#1a1d27;color:rgba(255,255,255,0.3);border:0.5px solid rgba(255,255,255,0.08);}
-
-/* 报告弹窗 */
 .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;}
 .modal-overlay.show{display:flex;}
 .modal{background:#1a1d27;border-radius:16px;border:0.5px solid rgba(167,139,250,0.3);width:100%;max-width:660px;}
@@ -94,9 +92,9 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .modal-close:hover{background:rgba(255,255,255,0.08);}
 .modal-tabs{display:flex;gap:4px;padding:12px 20px 0;}
 .tab{font-size:12px;padding:6px 16px;border-radius:8px 8px 0 0;cursor:pointer;color:rgba(255,255,255,0.4);background:transparent;border:0.5px solid transparent;}
-.tab.active{background:#13151e;color:#c4b5fd;border-color:rgba(167,139,250,0.25);border-bottom-color:#13151e;}
+.tab.active{background:#13151e;color:#c4b5fd;border-color:rgba(167,139,250,0.25);}
 .tab:hover:not(.active){color:rgba(255,255,255,0.65);}
-.modal-divider{border:none;border-top:0.5px solid rgba(255,255,255,0.07);margin:0 0 0;}
+.modal-divider{border:none;border-top:0.5px solid rgba(255,255,255,0.07);}
 .custom-select{padding:12px 20px;border-bottom:0.5px solid rgba(255,255,255,0.07);display:none;}
 .custom-select.show{display:block;}
 .custom-label{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:8px;}
@@ -163,7 +161,6 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
   </div>
 </div>
 
-<!-- 报告弹窗 -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeIfOutside(event)">
   <div class="modal" id="modalBox">
     <div class="modal-header">
@@ -172,7 +169,7 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
     </div>
     <div class="modal-tabs">
       <div class="tab active" id="tab-week" onclick="switchTab('week')">本周</div>
-      <div class="tab" id="tab-month" onclick="switchTab('month')">本月</div>
+      <div class="tab" id="tab-month" onclick="switchTab('month')">本月汇总</div>
       <div class="tab" id="tab-custom" onclick="switchTab('custom')">自定义</div>
     </div>
     <div class="modal-divider"></div>
@@ -294,22 +291,63 @@ function renderCharts(data){
   chart2=new Chart(document.getElementById('c2'),{type:'line',data:{labels,datasets:[{data:data.map(r=>r['成功率']),borderColor:'#f472b6',backgroundColor:'rgba(244,114,182,0.08)',pointBackgroundColor:'#f472b6',pointRadius:5,tension:0.3,fill:true}]},options:{...base,scales:{...base.scales,y:{...base.scales.y,min:60,max:100,ticks:{...base.scales.y.ticks,callback:v=>v+'%'}}}}});
 }
 
-function generateReport(rows){
+function generateWeekReport(row){
+  const {descKeys,resultKeys,planKeys,progTitleKeys}=getProgKeys(row);
+  let r='';
+  r+=`OpenClaw 自动化使用情况周报 (${row['周次']})\n`;
+  r+=`汇报周期： ${row['汇报周期']||'—'}\n`;
+  r+=`负责人：${row['负责人']||'雨棠'}\n`;
+  r+=`项目/部门：${row['部门']||'商务中心 - 客服组'}\n`;
+  r+=`\n一、运行数据概览\n`;
+  r+=`◆ 活跃智能体总数：${row['活跃智能体数']}个\n`;
+  r+=`◆ 本周任务触发总数：${row['触发次数']}次\n`;
+  r+=`◆ 任务执行成功率：${row['成功率']}%\n`;
+  r+=`◆ 字符消耗量：${Number(row['字符消耗']).toLocaleString()}\n`;
+  r+=`◆ 平均响应时长：${row['平均响应']||'—'}\n`;
+  r+=`\n二、核心自动化进展\n`;
+  for(let n=0;n<Math.min(Math.max(progTitleKeys.length,descKeys.length),3);n++){
+    const t=progTitleKeys[n]?row[progTitleKeys[n]]:'',d=descKeys[n]?row[descKeys[n]]:'',rs=resultKeys[n]?row[resultKeys[n]]:'';
+    if(!t&&!d&&!rs)continue;
+    if(t)r+=`《${t}》\n`;
+    if(d)r+=`◆ 描述：${d}\n`;
+    if(rs)r+=`◆ 成果：${rs}\n`;
+  }
+  r+=`\n三、资源消耗与成本\n`;
+  r+=`◆ 字符消耗量：${Number(row['字符消耗']).toLocaleString()}\n`;
+  r+=`◆ 平均响应时长：${row['平均响应']||'—'}\n`;
+  if(row['高频功能调用'])r+=`◆ 高频功能调用：${row['高频功能调用']}\n`;
+  r+=`\n四、风险记录与优化\n`;
+  if(row['异常记录'])r+=`◆ 异常记录：${row['异常记录']}\n`;
+  if(row['优化对策'])r+=`◆ 优化对策：${row['优化对策']}\n`;
+  const plans=planKeys.map(k=>row[k]).filter(Boolean);
+  if(plans.length){r+=`\n五、下周演进计划\n`;plans.forEach(p=>r+=`◆ ${p}\n`);}
+  return r.trim();
+}
+
+function generateMonthlyReport(rows){
   if(!rows||rows.length===0)return '没有可用的数据';
-  return rows.map(row=>{
-    const {descKeys,resultKeys,planKeys,progTitleKeys}=getProgKeys(row);
-    let r='';
-    r+=`OpenClaw 自动化使用情况周报 (${row['周次']})\n`;
-    r+=`汇报周期： ${row['汇报周期']||'—'}\n`;
-    r+=`负责人：${row['负责人']||'雨棠'}\n`;
-    r+=`项目/部门：${row['部门']||'商务中心 - 客服组'}\n`;
-    r+=`\n一、运行数据概览\n`;
-    r+=`◆ 活跃智能体总数：${row['活跃智能体数']}个\n`;
-    r+=`◆ 本周任务触发总数：${row['触发次数']}次\n`;
-    r+=`◆ 任务执行成功率：${row['成功率']}%\n`;
-    r+=`◆ 字符消耗量：${Number(row['字符消耗']).toLocaleString()}\n`;
-    r+=`◆ 平均响应时长：${row['平均响应']||'—'}\n`;
-    r+=`\n二、核心自动化进展\n`;
+  const first=rows[0],last=rows[rows.length-1];
+  const fp=(first['汇报周期']||'').split(/[-–]/)[0].trim();
+  const lp=(last['汇报周期']||'').split(/[-–]/).pop().trim();
+  const total=rows.reduce((s,r)=>s+r['触发次数'],0);
+  const avgRate=(rows.reduce((s,r)=>s+r['成功率'],0)/rows.length).toFixed(2);
+  const totalChar=rows.reduce((s,r)=>s+r['字符消耗'],0);
+  const maxAgents=Math.max(...rows.map(r=>r['活跃智能体数']));
+  const best=rows.reduce((a,b)=>a['成功率']>b['成功率']?a:b);
+  let r='';
+  r+=`OpenClaw 自动化使用情况月报（${first['周次']}–${last['周次']}）\n`;
+  r+=`汇报周期：${fp} - ${lp}\n`;
+  r+=`负责人：${first['负责人']||'雨棠'}\n`;
+  r+=`项目/部门：${first['部门']||'商务中心 - 客服组'}\n`;
+  r+=`\n一、运行数据总览\n`;
+  r+=`◆ 活跃智能体总数：${maxAgents}个（本月最高）\n`;
+  r+=`◆ 月度任务触发总数：${total.toLocaleString()}次（共 ${rows.length} 周）\n`;
+  r+=`◆ 平均任务执行成功率：${avgRate}%（最高 ${best['成功率']}%，${best['周次']}）\n`;
+  r+=`◆ 总字符消耗量：${totalChar.toLocaleString()}\n`;
+  r+=`\n二、核心自动化进展汇总\n`;
+  rows.forEach(row=>{
+    const {descKeys,resultKeys,progTitleKeys}=getProgKeys(row);
+    r+=`【${row['周次']}】\n`;
     for(let n=0;n<Math.min(Math.max(progTitleKeys.length,descKeys.length),3);n++){
       const t=progTitleKeys[n]?row[progTitleKeys[n]]:'',d=descKeys[n]?row[descKeys[n]]:'',rs=resultKeys[n]?row[resultKeys[n]]:'';
       if(!t&&!d&&!rs)continue;
@@ -317,20 +355,24 @@ function generateReport(rows){
       if(d)r+=`◆ 描述：${d}\n`;
       if(rs)r+=`◆ 成果：${rs}\n`;
     }
-    r+=`\n三、资源消耗与成本\n`;
-    r+=`◆ 字符消耗量：${Number(row['字符消耗']).toLocaleString()}\n`;
-    r+=`◆ 平均响应时长：${row['平均响应']||'—'}\n`;
-    if(row['高频功能调用'])r+=`◆ 高频功能调用：${row['高频功能调用']}\n`;
-    r+=`\n四、风险记录与优化\n`;
-    if(row['异常记录'])r+=`◆ 异常记录：${row['异常记录']}\n`;
-    if(row['优化对策'])r+=`◆ 优化对策：${row['优化对策']}\n`;
-    const plans=planKeys.map(k=>row[k]).filter(Boolean);
-    if(plans.length){
-      r+=`\n五、下周演进计划\n`;
-      plans.forEach(p=>r+=`◆ ${p}\n`);
-    }
-    return r.trim();
-  }).join('\n\n'+'─'.repeat(40)+'\n\n');
+  });
+  r+=`\n三、资源消耗汇总\n`;
+  r+=`◆ 总字符消耗量：${totalChar.toLocaleString()}\n`;
+  const allFuncs=[...new Set(rows.flatMap(row=>(row['高频功能调用']||'').split(/[，,、]/).map(f=>f.trim()).filter(Boolean)))];
+  if(allFuncs.length)r+=`◆ 高频功能调用：${allFuncs.join('、')}\n`;
+  r+=`\n四、风险记录汇总\n`;
+  rows.forEach(row=>{
+    if(row['异常记录']&&row['异常记录'].trim())r+=`◆ ${row['周次']} 异常记录：${row['异常记录']}\n`;
+    if(row['优化对策']&&row['优化对策'].trim())r+=`◆ ${row['周次']} 优化对策：${row['优化对策']}\n`;
+  });
+  r+=`\n五、下月演进方向\n`;
+  const allPlans=[...new Set(rows.flatMap(row=>{const {planKeys}=getProgKeys(row);return planKeys.map(k=>row[k]).filter(Boolean);}))];
+  allPlans.forEach(p=>r+=`◆ ${p}\n`);
+  return r.trim();
+}
+
+function generateCustomReport(rows){
+  return rows.map(row=>generateWeekReport(row)).join('\n\n'+'─'.repeat(40)+'\n\n');
 }
 
 function openReport(){
@@ -354,14 +396,14 @@ function switchTab(tab){
   document.getElementById('customSelect').classList.toggle('show',tab==='custom');
   const btn=document.getElementById('copyBtn');
   btn.classList.remove('copied');btn.textContent='复制全文';
-  if(tab==='week')document.getElementById('reportOut').textContent=generateReport([allData[allData.length-1]]);
-  else if(tab==='month')document.getElementById('reportOut').textContent=generateReport(allData);
+  if(tab==='week')document.getElementById('reportOut').textContent=generateWeekReport(allData[allData.length-1]);
+  else if(tab==='month')document.getElementById('reportOut').textContent=generateMonthlyReport(allData);
   else refreshCustom();
 }
 
 function refreshCustom(){
   const checked=[...document.querySelectorAll('#weekCbs input:checked')].map(cb=>allData[parseInt(cb.value)]);
-  document.getElementById('reportOut').textContent=checked.length?generateReport(checked):'请至少选择一周';
+  document.getElementById('reportOut').textContent=checked.length?generateCustomReport(checked):'请至少选择一周';
 }
 
 function copyReport(){

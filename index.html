@@ -301,8 +301,8 @@ function generateReport(rows){
     let r='';
     r+=`OpenClaw 自动化使用情况周报 (${row['周次']})\n`;
     r+=`汇报周期： ${row['汇报周期']||'—'}\n`;
-    r+=`负责人： [ ${row['负责人']||'雨棠'} ]\n`;
-    r+=`项目/部门： [ ${row['部门']||'商务中心 - 客服组'} ]\n`;
+    r+=`负责人：${row['负责人']||'雨棠'}\n`;
+    r+=`项目/部门：${row['部门']||'商务中心 - 客服组'}\n`;
     r+=`\n一、运行数据概览\n`;
     r+=`◆ 活跃智能体总数：${row['活跃智能体数']}个\n`;
     r+=`◆ 本周任务触发总数：${row['触发次数']}次\n`;
@@ -325,7 +325,10 @@ function generateReport(rows){
     if(row['异常记录'])r+=`◆ 异常记录：${row['异常记录']}\n`;
     if(row['优化对策'])r+=`◆ 优化对策：${row['优化对策']}\n`;
     const plans=planKeys.map(k=>row[k]).filter(Boolean);
-    if(plans.length){r+=`\n五、下周演进计划\n`;plans.forEach((p,i)=>r+=`${i+1}. ${p}\n`);}
+    if(plans.length){
+      r+=`\n五、下周演进计划\n`;
+      plans.forEach(p=>r+=`◆ ${p}\n`);
+    }
     return r.trim();
   }).join('\n\n'+'─'.repeat(40)+'\n\n');
 }

@@ -439,7 +439,7 @@ async function loadData(){
     const parsed=Papa.parse(text,{skipEmptyLines:true});
     const data=parseRows(parsed);
     if(!data||data.length===0)throw new Error('无数据');
-    allData=data;
+    allData=data.reverse();
     renderMetrics(data);renderKanban(data);renderCharts(data);
     const now=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
     setStatus('ok','已同步 '+now);

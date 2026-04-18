@@ -339,9 +339,15 @@ function generateWeekReport(row){
 
 function generateMonthlyReport(rows){
   if(!rows||rows.length===0)return '没有可用的数据';
-  const first=rows[0],last=rows[rows.length-1];
-  const fp=(first['汇报周期']||'').split(/[-–]/)[0].trim();
-  const lp=(last['汇报周期']||'').split(/[-–]/).pop().trim();
+  const first=rows.reduce((a,b)=>a['周次']<b['周次']?a:b);
+  const last=rows.reduce((a,b)=>a['周次']>b['周次']?a:b);
+  const allDates=rows.flatMap(r=>(r['汇报周期']||'').split(/[-–]/).map(d=>d.trim()).filter(Boolean));
+  const parsed_dates=allDates.map(d=>new Date(d)).filter(d=>!isNaN(d));
+  const minDate=parsed_dates.length?new Date(Math.min(...parsed_dates)):null;
+  const maxDate=parsed_dates.length?new Date(Math.max(...parsed_dates)):null;
+  const fmt=d=>d?`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`:'—';
+  const fp=fmt(minDate);
+  const lp=fmt(maxDate);
   const total=rows.reduce((s,r)=>s+r['触发次数'],0);
   const avgRate=(rows.reduce((s,r)=>s+r['成功率'],0)/rows.length).toFixed(2);
   const totalChar=rows.reduce((s,r)=>s+r['字符消耗'],0);
@@ -412,7 +418,7 @@ function switchTab(tab){
   document.getElementById('customSelect').classList.toggle('show',tab==='custom');
   const btn=document.getElementById('copyBtn');
   btn.classList.remove('copied');btn.textContent='复制全文';
-  if(tab==='week')document.getElementById('reportOut').textContent=generateWeekReport(allData[allData.length-1]);
+  if(tab==='week')document.getElementById('reportOut').textContent=generateWeekReport(allData[0]);
   else if(tab==='month')document.getElementById('reportOut').textContent=generateMonthlyReport(allData);
   else refreshCustom();
 }

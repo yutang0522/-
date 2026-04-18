@@ -253,6 +253,7 @@ function renderWeekCard(row,i){
     <div class="sr"><span class="sk">成功率</span><span class="sv sv-hi">${row['成功率']}%</span></div>
     <div class="sr"><span class="sk">字符消耗</span><span class="sv">${Number(row['字符消耗']).toLocaleString()}</span></div>
     <div class="sr"><span class="sk">平均响应</span><span class="sv">${row['平均响应']||'—'}</span></div>
+    ${row['预估节省人工']?`<div class="sr"><span class="sk">预估节省人工</span><span class="sv sv-hi">${row['预估节省人工']}</span></div>`:''}
   </div></div>`;
 
   // ✅ 修正：以 progTitleKeys.length 为基准迭代，正确对齐标题/描述/成果
@@ -314,6 +315,7 @@ function generateWeekReport(row){
   r+=`◆ 任务执行成功率：${row['成功率']}%\n`;
   r+=`◆ 字符消耗量：${Number(row['字符消耗']).toLocaleString()}\n`;
   r+=`◆ 平均响应时长：${row['平均响应']||'—'}\n`;
+  if(row['预估节省人工'])r+=`◆ 预估节省人工：${row['预估节省人工']}\n`;
   r+=`\n二、核心自动化进展\n`;
   // ✅ 修正：以 progTitleKeys.length 为基准
   for(let n=0;n<progTitleKeys.length;n++){

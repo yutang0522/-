@@ -15,7 +15,7 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .live-dot{width:8px;height:8px;border-radius:50%;background:#f472b6;animation:blink 1.5s infinite;flex-shrink:0;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .top-title{font-size:18px;font-weight:500;color:#fff;}
-.top-sub{font-size:11px;color:rgba(255,200,220,0.35);margin-top:3px;}
+.top-sub{font-size:11px;color:rgba(255,200,220,0.45);margin-top:3px;}
 .top-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .pill{font-size:11px;padding:5px 14px;border-radius:20px;border:0.5px solid rgba(244,114,182,0.35);color:#f9a8d4;background:rgba(244,114,182,0.08);cursor:pointer;}
 .pill:hover{background:rgba(244,114,182,0.18);}
@@ -39,16 +39,16 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .b2{background:linear-gradient(90deg,#e879f9,#a78bfa);}
 .b3{background:linear-gradient(90deg,#f472b6,#fb923c);}
 .b4{background:linear-gradient(90deg,#a78bfa,#60a5fa);}
-.mc-label{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:5px;}
+.mc-label{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:5px;}
 .mc-val{font-size:22px;font-weight:500;color:#fff;}
 .mc-note{font-size:10px;margin-top:4px;color:#f9a8d4;}
-.kanban{display:grid;gap:10px;margin-bottom:1.5rem;}
+.kanban{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:1.5rem;}
 .week-col{background:#1a1d27;border-radius:12px;overflow:hidden;border:0.5px solid rgba(255,255,255,0.06);}
 .wh-bar{height:2px;}
 .week-head{padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;border-bottom:0.5px solid rgba(255,255,255,0.06);}
 .week-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.week-label{color:rgba(255,255,255,0.75);}
-.week-period{font-size:10px;color:rgba(255,255,255,0.3);margin-left:auto;}
+.week-label{color:rgba(255,255,255,0.85);}
+.week-period{font-size:10px;color:rgba(255,255,255,0.35);margin-left:auto;}
 .week-body{padding:10px;}
 .section{margin-top:8px;}
 .stag{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:3px 9px;border-radius:20px;margin-bottom:6px;}
@@ -60,21 +60,21 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .card{background:#13151e;border:0.5px solid rgba(255,255,255,0.05);border-radius:8px;padding:10px 12px;margin-bottom:6px;}
 .sr{display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);}
 .sr:last-child{border-bottom:none;}
-.sk{font-size:11px;color:rgba(255,255,255,0.3);}
+.sk{font-size:11px;color:rgba(255,255,255,0.55);}
 .sv{font-size:11px;font-weight:500;color:#fff;}
 .sv-hi{color:#f472b6;}
 .pt{font-size:12px;font-weight:500;color:#fff;margin-bottom:4px;}
-.pd{font-size:11px;color:rgba(255,255,255,0.35);line-height:1.55;margin-bottom:3px;}
-.pr{font-size:11px;color:#c4b5fd;line-height:1.55;}
-.pr::before{content:"→ ";opacity:0.5;}
+.pd{font-size:11px;color:rgba(255,255,255,0.78);line-height:1.6;margin-bottom:4px;}
+.pr{font-size:11px;color:#c4b5fd;line-height:1.6;}
+.pr::before{content:"→ ";opacity:0.7;}
 .ri-label{font-size:10px;font-weight:500;color:#fca5a5;margin-bottom:4px;}
-.ri{font-size:11px;color:rgba(252,165,165,0.55);line-height:1.6;margin-bottom:6px;}
+.ri{font-size:11px;color:rgba(252,165,165,0.85);line-height:1.6;margin-bottom:6px;}
 .ri:last-child{margin-bottom:0;}
-.func-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.35);margin:2px;}
+.func-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);margin:2px;}
 .pi{display:flex;gap:7px;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,0.04);}
 .pi:last-child{border-bottom:none;}
 .pn{font-size:10px;color:#fdba74;flex-shrink:0;margin-top:1px;}
-.pt2{font-size:11px;color:rgba(255,255,255,0.35);line-height:1.5;}
+.pt2{font-size:11px;color:rgba(255,255,255,0.72);line-height:1.5;}
 .two{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.5rem;}
 @media(max-width:600px){.two{grid-template-columns:1fr;}}
 .chart-card{background:#1a1d27;border:0.5px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 16px;}
@@ -82,7 +82,7 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .cw{position:relative;width:100%;height:180px;}
 .divider{border:none;border-top:0.5px solid rgba(255,255,255,0.06);margin:1.25rem 0;}
 .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-.badge{font-size:10px;padding:2px 9px;border-radius:20px;background:#1a1d27;color:rgba(255,255,255,0.3);border:0.5px solid rgba(255,255,255,0.08);}
+.badge{font-size:10px;padding:2px 9px;border-radius:20px;background:#1a1d27;color:rgba(255,255,255,0.45);border:0.5px solid rgba(255,255,255,0.08);}
 .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;}
 .modal-overlay.show{display:flex;}
 .modal{background:#1a1d27;border-radius:16px;border:0.5px solid rgba(167,139,250,0.3);width:100%;max-width:660px;}
@@ -97,12 +97,12 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 .modal-divider{border:none;border-top:0.5px solid rgba(255,255,255,0.07);}
 .custom-select{padding:12px 20px;border-bottom:0.5px solid rgba(255,255,255,0.07);display:none;}
 .custom-select.show{display:block;}
-.custom-label{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:8px;}
+.custom-label{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;}
 .week-cbs{display:flex;flex-wrap:wrap;gap:10px;}
 .week-cb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.6);cursor:pointer;}
 .week-cb input{accent-color:#a78bfa;width:14px;height:14px;}
 .modal-body{padding:16px 20px;}
-.report-out{background:#13151e;border-radius:10px;border:0.5px solid rgba(255,255,255,0.06);padding:16px;font-size:12px;line-height:2;color:rgba(255,255,255,0.72);white-space:pre-wrap;font-family:'M PLUS Rounded 1c',sans-serif;min-height:200px;max-height:55vh;overflow-y:auto;}
+.report-out{background:#13151e;border-radius:10px;border:0.5px solid rgba(255,255,255,0.06);padding:16px;font-size:12px;line-height:2;color:rgba(255,255,255,0.78);white-space:pre-wrap;font-family:'M PLUS Rounded 1c',sans-serif;min-height:200px;max-height:55vh;overflow-y:auto;}
 .modal-footer{padding:12px 20px;border-top:0.5px solid rgba(255,255,255,0.07);display:flex;justify-content:flex-end;}
 .btn-copy{font-size:12px;padding:6px 20px;border-radius:20px;border:0.5px solid rgba(167,139,250,0.4);color:#c4b5fd;background:rgba(167,139,250,0.1);cursor:pointer;}
 .btn-copy:hover{background:rgba(167,139,250,0.2);}
@@ -152,7 +152,7 @@ body{background:#0f1117;color:#e8e6e0;font-family:'M PLUS Rounded 1c',sans-serif
 </div>
 
 <div class="divider"></div>
-<div style="font-size:11px;color:rgba(255,255,255,0.25);">高频指令
+<div style="font-size:11px;color:rgba(255,255,255,0.4);">高频指令
   <div class="badges">
     <span class="badge">/T1</span><span class="badge">/T1E</span><span class="badge">/T1W</span>
     <span class="badge">/daily</span><span class="badge">/dailydd</span>
@@ -219,14 +219,14 @@ function parseRows(results){
   });
 }
 
+// ✅ 修正：正确识别 ▲ 开头的进展标题栏位
 function getProgKeys(row){
   const allKeys=Object.keys(row);
-  const sysKeys=new Set(['周次','汇报周期','负责人','部门','活跃智能体数','触发次数','成功率','字符消耗','平均响应','高频功能调用','异常记录','优化对策']);
   return {
     descKeys:allKeys.filter(k=>k.includes('描述')),
     resultKeys:allKeys.filter(k=>k.includes('成果')),
     planKeys:allKeys.filter(k=>k.startsWith('★')),
-    progTitleKeys:allKeys.filter(k=>!sysKeys.has(k)&&!k.includes('描述')&&!k.includes('成果')&&!k.startsWith('★'))
+    progTitleKeys:allKeys.filter(k=>k.startsWith('▲'))
   };
 }
 
@@ -253,19 +253,27 @@ function renderWeekCard(row,i){
     <div class="sr"><span class="sk">字符消耗</span><span class="sv">${Number(row['字符消耗']).toLocaleString()}</span></div>
     <div class="sr"><span class="sk">平均响应</span><span class="sv">${row['平均响应']||'—'}</span></div>
   </div></div>`;
+
+  // ✅ 修正：以 progTitleKeys.length 为基准迭代，正确对齐标题/描述/成果
   let progHtml='';
-  for(let n=0;n<Math.min(Math.max(progTitleKeys.length,descKeys.length),3);n++){
-    const t=progTitleKeys[n]?row[progTitleKeys[n]]:'',d=descKeys[n]?row[descKeys[n]]:'',r=resultKeys[n]?row[resultKeys[n]]:'';
+  for(let n=0;n<progTitleKeys.length;n++){
+    const t=progTitleKeys[n]?row[progTitleKeys[n]]:'';
+    const d=descKeys[n]?row[descKeys[n]]:'';
+    const r=resultKeys[n]?row[resultKeys[n]]:'';
     if(!t&&!d&&!r)continue;
     progHtml+=`<div class="card">${t?`<div class="pt">${t}</div>`:''}${d?`<div class="pd">${d}</div>`:''}${r?`<div class="pr">${r}</div>`:''}</div>`;
   }
   const sec2=progHtml?`<div class="section"><span class="stag s2">二、核心自动化进展</span>${progHtml}</div>`:'';
+
   const funcs=row['高频功能调用']||'';
   const sec3=funcs?`<div class="section"><span class="stag s3">三、资源消耗</span><div class="card"><div style="display:flex;flex-wrap:wrap;">${funcs.split(/[，,、]/).filter(f=>f.trim()).map(f=>`<span class="func-tag">${f.trim()}</span>`).join('')}</div></div></div>`:'';
+
   const ab=row['异常记录']||'',op=row['优化对策']||'';
   const sec4=(ab||op)?`<div class="section"><span class="stag s4">四、风险记录与优化</span><div class="card">${ab?`<div class="ri-label">异常记录</div><div class="ri">${ab}</div>`:''}${op?`<div class="ri-label">优化对策</div><div class="ri">${op}</div>`:''}</div></div>`:'';
+
   const plans=planKeys.map(k=>row[k]).filter(Boolean);
   const sec5=plans.length?`<div class="section"><span class="stag s5">五、下周演进计划</span><div class="card">${plans.map((p,idx)=>`<div class="pi"><span class="pn">${idx+1}.</span><span class="pt2">${p}</span></div>`).join('')}</div></div>`:'';
+
   return `<div class="week-col">
     <div class="wh-bar" style="background:${c.bar};"></div>
     <div class="week-head"><span class="week-dot" style="background:${c.dot};"></span><span class="week-label">${row['周次']}</span><span class="week-period">${row['汇报周期']||''}</span></div>
@@ -275,9 +283,10 @@ function renderWeekCard(row,i){
 
 function renderKanban(data){
   const kb=document.getElementById('kanbanArea');
+  // ✅ 修正：正确设置栏数，最多3栏
   kb.style.gridTemplateColumns=`repeat(${Math.min(data.length,3)},1fr)`;
   kb.innerHTML=data.map((row,i)=>renderWeekCard(row,i)).join('');
-  document.getElementById('topSub').textContent=`商务中心 · 客服组 · 负责人：${data[0]['负责人']||'雨棠'} · 第 ${data[0]['周次']}–${data[data.length-1]['周次']} 周`;
+  document.getElementById('topSub').textContent=`商务中心 · 客服组 · 负责人：${data[0]['负责人']||'雨棠'} · ${data[0]['周次']}–${data[data.length-1]['周次']}`;
 }
 
 function renderCharts(data){
@@ -305,8 +314,11 @@ function generateWeekReport(row){
   r+=`◆ 字符消耗量：${Number(row['字符消耗']).toLocaleString()}\n`;
   r+=`◆ 平均响应时长：${row['平均响应']||'—'}\n`;
   r+=`\n二、核心自动化进展\n`;
-  for(let n=0;n<Math.min(Math.max(progTitleKeys.length,descKeys.length),3);n++){
-    const t=progTitleKeys[n]?row[progTitleKeys[n]]:'',d=descKeys[n]?row[descKeys[n]]:'',rs=resultKeys[n]?row[resultKeys[n]]:'';
+  // ✅ 修正：以 progTitleKeys.length 为基准
+  for(let n=0;n<progTitleKeys.length;n++){
+    const t=progTitleKeys[n]?row[progTitleKeys[n]]:'';
+    const d=descKeys[n]?row[descKeys[n]]:'';
+    const rs=resultKeys[n]?row[resultKeys[n]]:'';
     if(!t&&!d&&!rs)continue;
     if(t)r+=`《${t}》\n`;
     if(d)r+=`◆ 描述：${d}\n`;
@@ -348,8 +360,11 @@ function generateMonthlyReport(rows){
   rows.forEach(row=>{
     const {descKeys,resultKeys,progTitleKeys}=getProgKeys(row);
     r+=`【${row['周次']}】\n`;
-    for(let n=0;n<Math.min(Math.max(progTitleKeys.length,descKeys.length),3);n++){
-      const t=progTitleKeys[n]?row[progTitleKeys[n]]:'',d=descKeys[n]?row[descKeys[n]]:'',rs=resultKeys[n]?row[resultKeys[n]]:'';
+    // ✅ 修正：以 progTitleKeys.length 为基准
+    for(let n=0;n<progTitleKeys.length;n++){
+      const t=progTitleKeys[n]?row[progTitleKeys[n]]:'';
+      const d=descKeys[n]?row[descKeys[n]]:'';
+      const rs=resultKeys[n]?row[resultKeys[n]]:'';
       if(!t&&!d&&!rs)continue;
       if(t)r+=`《${t}》\n`;
       if(d)r+=`◆ 描述：${d}\n`;
